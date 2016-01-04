@@ -1,0 +1,33 @@
+Script started on Sat May  2 21:31:19 2015
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ make
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/  -c skgu_pki.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/  -c skgu_cert.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/ -c skgu_misc.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/ -c pv_misc.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -o skgu_pki skgu_pki.o skgu_cert.o skgu_misc.o pv_misc.o -L. -L/usr/lib/  -L/home/nicolosi/devel/libdcrypt/lib/ -ldcrypt  -lgmp
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/  -c skgu_nidh.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -o skgu_nidh skgu_nidh.o skgu_cert.o skgu_misc.o pv_misc.o -L. -L/usr/lib/  -L/home/nicolosi/devel/libdcrypt/lib/ -ldcrypt  -lgmp
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_pki init
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_pki cert -g alice.priv alice.pub alice
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_pki cert -g bob.priv bob.pub bob
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_nidh alice.priv alice.cert alice bob.pub bob.cert bob testlabel
+Valid certificate
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_nidh bob.priv bob.cert alice.pub alice.cert alice testlabel
+: trouble importing key from file
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ./skgu_nidh bob.priv bob.cert alice.pub alice.cert alice testlabel [1@b[1@o[1@b[1@ alice.pub alice.cert alice testlabel
+Valid certificate
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ ls testlabel-*
+testlabel-alice.b64  testlabel-bob.b64
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ cat testlabel-*
+J+9MvzGbKi1FaTV/RDVScGYhK9tBNxLZzSZQhjkk0T8=
+J+9MvzGbKi1FaTV/RDVScGYhK9tBNxLZzSZQhjkk0T8=
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ sha1sum testlabel-*
+5f4932a59c25298dc9bf90794497bf456b8f7a10  testlabel-alice.b64
+5f4932a59c25298dc9bf90794497bf456b8f7a10  testlabel-bob.b64
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ diff testlabel-*
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ echo "done with typescript"
+done with typescript
+]0;dvinakov@shell: ~/Work/cs579/lab2dvinakov@shell:~/Work/cs579/lab2$ exit
+exit
+
+Script done on Sat May  2 21:34:20 2015

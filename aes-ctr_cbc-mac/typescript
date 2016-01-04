@@ -1,0 +1,120 @@
+Script started on Fri Apr 10 18:34:22 2015
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_keygen key.b64
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ cat key.b64 
+h0MI2R8oQx5BrbPflBKHRVJCeMhVXkfb25pgh5Fvbbo=
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ touch blankfiletest.txt
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 blankfiletest.txt blankfiletest.txt.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 blankfiletest.txt.enc blankfiletest.txt.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ sha1sum blankfiletest.txt blankfiletest.txt.dec
+da39a3ee5e6b4b0d3255bfef95601890afd80709  blankfiletest.txt
+da39a3ee5e6b4b0d3255bfef95601890afd80709  blankfiletest.txt.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 pv_decrypt pv_decrypt.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 pv_decrypt.enc pv_decrypt2
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ sha1sum pv_decrypt pv_decrypt2
+36aa1279fca93857b8223e5d88fd3076bde576e8  pv_decrypt
+36aa1279fca93857b8223e5d88fd3076bde576e8  pv_decrypt2
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ echo "testbadciphertxt" > badcase.txt
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 badcase.txt badcase.txt.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ echo "*& "     '*' >> badcase.txt.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt badcase.txt           key.b64 badcase.txt.enc base  dcase.txt.dectest    
+MAC mismatch
+failed to write ptxt
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ yes "test" | j head -n1015 >> yes.txt          yes.txt
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt m key.b64 yes.txt yes.txt.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 yes.txt  .enc yes.txt.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ sha1sum yest.  .txt yest.txt     .txt.dec
+2fbe4a177cf5b96434a79a055c6a411951b3b85a  yes.txt
+2fbe4a177cf5b96434a79a055c6a411951b3b85a  yes.txt.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ dd if=/dev/urandom of=urandom.img bs=1M  256 of  count=20
+20+0 records in
+20+0 records out
+5120 bytes (5.1 kB) copied, 0.431798 s, 11.9 kB/s
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt urandom.img             key.b64 un random.img urandom.img  .enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 urandom.img.enc urandom.img.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ sha1sum urandom.img.e   urandom.img.dec     dec urandom.img.enc
+a6771b9852215982b49c930036812e9636577467  urandom.img
+a6771b9852215982b49c930036812e9636577467  urandom.img.dec
+4c1f24161ab0529a44bed50792a1bc9560f97b30  urandom.img.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ls -l
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ exit
+
+Script done on Fri Apr 10 18:41:23 2015
+Script started on Fri Apr 10 18:47:59 2015
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ls -l
+total 160
+-rw----r--+ 1 dvinakov student   1531 Apr  5 22:55 Makefile
+-rw-------+ 1 dvinakov student     45 Apr 10 18:34 key.b64
+-rw----r--+ 1 dvinakov student    603 Apr  8 02:15 pv.h
+-rw----r--+ 1 dvinakov student   6634 Apr  9 12:01 pv_decrypt.c
+-rw----r--+ 1 dvinakov student 126611 Apr 10 18:36 pv_decrypt.enc
+-rw----r--+ 1 dvinakov student   5585 Apr  9 11:49 pv_encrypt.c
+-rw----r--+ 1 dvinakov student   2211 Apr  6 23:07 pv_keygen.c
+-rw----r--+ 1 dvinakov student   5132 Apr  8 00:00 pv_misc.c
+-rw----r--+ 1 dvinakov student   3524 Apr 10 18:42 typescript
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ make
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/ -c pv_keygen.c pv_misc.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -o pv_keygen pv_keygen.o pv_misc.o -L. -L/usr/lib/  -L/home/nicolosi/devel/libdcrypt/lib/ -ldcrypt  -lgmp
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/ -c pv_encrypt.c pv_misc.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -o pv_encrypt pv_encrypt.o pv_misc.o -L. -L/usr/lib/  -L/home/nicolosi/devel/libdcrypt/lib/ -ldcrypt  -lgmp
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -I. -I/usr/include/ -I/home/nicolosi/devel/libdcrypt/include/ -c pv_decrypt.c pv_misc.c
+gcc -g -O2 -ansi -Wall -Wsign-compare -Wchar-subscripts -Werror -o pv_decrypt pv_decrypt.o pv_misc.o -L. -L/usr/lib/  -L/home/nicolosi/devel/libdcrypt/lib/ -ldcrypt  -lgmp
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 Mkae   akefile Makefile.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ rm  echo "testing bad key"
+testing bad key
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ rm key      ./pv_keygen key.b64 
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 Makefile.enc Makefile2 .baddecryt pt
+MAC mismatch
+failed to write ptxt
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ rm Makefile.enc Makefile.baddecrypt 
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ echo "test multiple encryptions"
+test multiple encryptions
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt ky ey.b64 Makefile Makefile.enc
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 Makefile.enc Makefile.enc2
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_encrypt key.b64 Makefile.enc2 Makefile.enc3
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt Makefile.enc3 Makefile.enc2    dec2
+Simple File Decryption Utility
+Usage: ./pv_decrypt SK-FILE CTEXT-FILE PTEXT-FILE
+       Exits if either SK-FILE or CTEXT-FILE don't exist, or
+       if a symmetric key sk cannot be found in SK-FILE.
+       Otherwise, tries to use sk to decrypt the content of
+       CTEXT-FILE: upon success, places the resulting plaintext
+       in PTEXT-FILE; if a decryption problem is encountered
+       after the processing started, PTEXT-FILE is truncated
+       to zero-length and its previous content is lost.
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt Makefile.enc3 Makefile.dec2[1@k[1@e[1@y[1@.[1@b[1@6[1@4[1@ 
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrypt key.b64 Makefile.dec2      en  dec2 Makefile.dec1
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ./pv_decrup  ypt Mak   key.b64 Mk akefile.dec1 Makefile.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ ls -l
+total 609
+-rw----r--+ 1 dvinakov student   1531 Apr  5 22:55 Makefile
+-rw-------+ 1 dvinakov student   1531 Apr 10 18:51 Makefile.dec
+-rw-------+ 1 dvinakov student   1563 Apr 10 18:51 Makefile.dec1
+-rw-------+ 1 dvinakov student   1595 Apr 10 18:51 Makefile.dec2
+-rw----r--+ 1 dvinakov student   1563 Apr 10 18:50 Makefile.enc
+-rw----r--+ 1 dvinakov student   1595 Apr 10 18:50 Makefile.enc2
+-rw----r--+ 1 dvinakov student   1627 Apr 10 18:50 Makefile.enc3
+-rw-------+ 1 dvinakov student     45 Apr 10 18:49 key.b64
+-rw----r--+ 1 dvinakov student    603 Apr  8 02:15 pv.h
+-rwx---r-x+ 1 dvinakov student 126579 Apr 10 18:48 [0m[01;32mpv_decrypt[0m
+-rw----r--+ 1 dvinakov student   6634 Apr  9 12:01 pv_decrypt.c
+-rw----r--+ 1 dvinakov student 126611 Apr 10 18:36 pv_decrypt.enc
+-rw----r--+ 1 dvinakov student  32632 Apr 10 18:48 pv_decrypt.o
+-rwx---r-x+ 1 dvinakov student 124856 Apr 10 18:48 [01;32mpv_encrypt[0m
+-rw----r--+ 1 dvinakov student   5585 Apr  9 11:49 pv_encrypt.c
+-rw----r--+ 1 dvinakov student  26904 Apr 10 18:48 pv_encrypt.o
+-rwx---r-x+ 1 dvinakov student  90898 Apr 10 18:48 [01;32mpv_keygen[0m
+-rw----r--+ 1 dvinakov student   2211 Apr  6 23:07 pv_keygen.c
+-rw----r--+ 1 dvinakov student  16136 Apr 10 18:48 pv_keygen.o
+-rw----r--+ 1 dvinakov student   5132 Apr  8 00:00 pv_misc.c
+-rw----r--+ 1 dvinakov student  21856 Apr 10 18:48 pv_misc.o
+-rw----r--+ 1 dvinakov student   3524 Apr 10 18:42 typescript
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ sha1sum Makefile Makefile.dec
+91687a4585ae5060a2f44d5a3a3562d77798530e  Makefile
+91687a4585ae5060a2f44d5a3a3562d77798530e  Makefile.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ diff Makefile Makefile.dec
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ " echo "done" ."
+done.
+]0;dvinakov@gits: ~/Work/cs579/lab1dvinakov@gits:~/Work/cs579/lab1$ exit
+exit
+
+Script done on Fri Apr 10 18:52:19 2015
