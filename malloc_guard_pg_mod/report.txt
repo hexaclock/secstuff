@@ -1,0 +1,50 @@
+Daniel Vinakovsky
+CS577 - Lab 5
+I pledge my honor that I have abided by
+the Stevens Honor System.
+
+Wrapper Functions:
+
+pmalloc(size_t) works by taking a size, and uses two
+mmap(2) calls to allocate an R/W page in memory, and
+another as a guard page. The size of each R/W page is
+a multiple of the systems page size, so the smallest
+it can be is 4096B. however, the user always gets
+approximately the size they requested (rounded up to
+the next multiple of sizeof(size_it)). Metadata on
+the size of the user-accessible buffer is stored 
+directly before the returned pointer for later calls
+to free.
+
+pcalloc(int,size_t) simply calls pmalloc() in my
+implementation. Since pmalloc() maps memory with
+the MAP_ANONYMOUS flag, the buffer is guaranteed
+to be initialized to zero.
+
+pfree(void*) reads the metadata stored by pmalloc() and
+uses munmap(2) to unmap the user-acessible page and the
+guard page after using mprotect(2) to make the guard page
+accessible.
+
+prealloc(void*,size_t) resizes a buffer pointed to by
+*ptr by calling pmalloc() to create a new buffer, copying
+up to newsize or just the current size (if newsize>cursize)
+to the new buffer and returning a pointer to it. prealloc()
+calls free if newsize is 0.
+
+pmemalign(size_t,size_t) allocates user-specified number
+of bytes at a particular and returns a pointer aligned
+to a user-specified alignment. In other words, the
+returned pointer is divisible by alignment. This function
+works similarly to pmalloc, but performs extra arithmetic
+to return a pointer that is exactly divisible by size_t
+alignment.
+
+These functions help prevent heap buffer overflows. They
+do not help at all with stack buffer overflows. They also
+would not help protect from the exploit we implemented
+against the heap buffer overflow vulnerability in lab 3
+as the entire block structure is allocated as a whole.
+An attacker would still be able to overflow the buffer
+and rewrite the function pointer without writing into
+a guard page.

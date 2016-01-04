@@ -1,0 +1,1 @@
+LD_LIBRARY_PATH=/home/dvinakov/Work/cs577/lab5/lib

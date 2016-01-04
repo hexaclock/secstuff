@@ -1,0 +1,67 @@
+#1) The following antivirus engines classified my unaltered, naive "malicious" 
+	executable as malware. It seems that this is evident just through basic
+	static analysis of the assembly behind the executable.
+
+	AVG 		Win32/Patched.IA
+	Avast 		Multi:Swrort-A [Trj]
+	ClamAV 		Win.Trojan.MSShellcode-9
+	Kaspersky 	HEUR:Trojan.Win32.Generic
+	Microsoft 	Trojan:Win32/Swrort.A
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	Rising 		PE:HackTool.Swrort!1.6477 [F]
+	
+#2) 
+	AVG 		Win32/Patched.IA
+	Kaspersky 	HEUR:Trojan.Win32.Generic
+	Microsoft 	Trojan:Win32/Swrort.A
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen 
+
+	Simply XOR'ing each byte of the shellcode by the loop invariant variable "i" 
+	mod 256 was enough to "encrypt" the shellcode (packer source code in 
+	packer.c) and fool a couple of engines. The actual malicious 
+	source code (part2.c) inplace "decrypts" the buffer containing the 
+	previously packed shell code.
+	
+#3) 
+	AVG 		Win32/Patched.IA
+	Kaspersky 	HEUR:Trojan.Win32.Generic
+	Microsoft 	Trojan:Win32/Swrort.A
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	
+	Consuming a lot of memory didn't seem to help very much. It could be that I
+	didn't malloc(2) enough (only allocated 10MB on the heap), but I don't think
+	this is a good strategy to begin with. I know I would be suspicious if a
+	program was taking up orders of magnitude more memory than it should.
+	
+#4)
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	
+	Consuming CPU _and_ memory resources via recursion seems to have evaded all
+	but the Qihoo antivirus engine. 
+	
+#5)
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	
+	Building on top of #4, this evasion technique was not very effective. It
+	definitely cannot defeat an engine that skips if/if not checks, and also
+	would not work very well in practice - malicious executables often have
+	randomly-generated filenames.
+	
+#6)
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	
+	a) A simple sleep(n) statement does not accomplish anything.
+	
+	b) This may be effective in avoiding some engines, but a smart engine would
+	simply skip the while/if construct in charge of keeping track of elapsed 
+	time. Embedding part of the XOR key inside this loop did not seem to help
+	either... I'm fairly suspicious Qihoo-360 is far too agressive..
+
+#7)
+	https://www.av-test.org/fileadmin/pdf/VB-AVC-AVT-press-release.pdf
+	Qihoo-360 	HEUR/QVM20.1.Malware.Gen
+	
+	According to the above article, Qihoo is using a different engine that could
+	not actually be used in production and its results should not count. I've
+	seen this in that its static analyzer seems to throw false positives even
+	when I don't decrypt the packed shellcode, or use bogus shellcode altogether!

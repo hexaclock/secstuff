@@ -1,0 +1,47 @@
+Daniel Vinakovsky
+Professor Georgios Portokalidis
+CS577
+September 23, 2015
+
+I pledge my honor that I have abided by the Stevens Honor System.
+
+Design choices:
+
+I chose to use the C++ programming language and the system's OpenSSL library for this assignment.
+C++11 provided some very useful data structures (unordered maps) via the standard library that allowed
+for O(1) lookups of processed and inputted hashes.
+
+In addition to the standard dictionary and 3-5 character brute force attacks, I implemented a l33tspeak heuristic,
+a number-suffix heuristic (0-99,1940-2039), and a simple PIN cracker (0-20M). If I had more time to work on the
+assignment, I would have made it multi-threaded in order to run several attacks at once, but I did try to code it
+to be as efficient as possible otherwise (passing pointers where possible, using hashmaps, "shared" data structures, etc.).
+
+I chose to use the phpbb wordlist (included in the resource directory, along with example password hashes).
+
+Any cracked passwords & associated usernames are written to a file once the program exits/gets SIGINT/times out.
+They are also displayed on the screen as soon as they are cracked.
+
+Lastly, I took inspiration for my output to the screen from several pentesting/recon tools I've used in the past.
+It looks neat, and greatly helped with the debugging process (lines prefixed with [+] indicate expected/correct
+behavior, [-] indicate some sort of error or unexpected failure, [*] is informational, and [/] is simply some detail about the internal
+flow of the program).
+
+Build instructions:
+
+* Run "make" in this directory.
+
+Run instructions:
+
+* cd ./src, then execute "./passcrack <passwordfile> <resultsfile> <timeout> <saltstring>" (salt is optional)
+
+Suggestions to hinder cracking efforts:
+
+1) Don't use MD5! It's a very fast, hash function that allows an attacker to try billions of passwords/second
+   if using a GPU. My suggestion is to use functions that have work factors: scrypt, bcrypt, or PBKDF2 (in order of preference).
+
+2) Use a longer, random salt for each password hash. Using the same salt for every password hash does nothing
+   to hinder potentially cracking multiple passwords for each attempt. Using the same salt for each hash only
+   prevents precomputed hashtable attacks.
+
+3) Use a pepper (hardcoded value added in addition to the salt, not stored in the database, but stored in application code), or 
+   encrypt your hashes using AES, Blowfish, or similar.

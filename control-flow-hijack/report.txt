@@ -1,0 +1,35 @@
+Daniel Vinakovsky
+Professor Georgios Portokalidis
+CS577
+September 30, 2015
+
+I pledge my honor that I have abided by the Stevens Honor System.
+
+Tools created for overflow attacks:
+I created 2 "exploit.c" programs (one for stack overflow exploit, and one for heap overflow exploit) that simply output the NOP sled + Shellcode + Return address of some address in the NOP sled. When I run each program and redirect the data to a file, I have exactly the data needed to correctly overflow the buffer and the RBP pointer with my shellcode and to rewrite the return address. I then provide this file as input to the respective vulnerable binary (run through gdb to disable ASLR) to automatically exploit the vulnerability. 
+
+Manual investigation ~ stack_overflow:
+
+I needed to use the GNU Debugger (gdb) to inspect the stack_overflow binary when loaded in memory. By using the gdb "info frame", "info reg", and "disas" commands, I took note of the rbp pointer in the stackframe of the echo_input(char *) function, and then found the offset of the buffer (-0x108(rbp)) using "disas echo_input". From there, I performed simple arithmetic (rbp - 0x108), to get the memory address in the stack that I should return to (beginning of the buffer, since I'm using NOPs to pad my actual shellcode). With some experimentation, I was able to reliably overflow the buffer and rewrite the address with any data that I wanted (needed to be inputted in Little Endian notation).
+
+Design choices ~ stack_overflow exploit:
+
+I started from the example shell code given in class, edited the shell code to remove any 0s (mostly using the subtraction trick), and then implemented a JMP/CALL/POP method of getting the address of the "Hello world" text. I then ran s-proc on the generated hello.sc file to test the exploit and convert it to hexadecimal notation. Using the information I found through my investigation above, I padded my shellcode with the appropriate length of NOPs, followed by my shellcode, followed by the return address (pointing somewhere in the NOP sled).
+
+How to run stack_overflow exploit:
+
+1. cd stack; gcc -o exploit exploit.c; ./exploit > hackfile; gdb ./stack_overflow
+2. run < hackfile
+
+Manual investigation ~ heap_overflow:
+
+I once again needed to use gdb to inspect the binary. While the heap is not executable, the idea here was to overflow the function pointer with the memory address of our executable data on the stack. After implementing the stack overflow, this seemed easier - simply overflow the buffer, and then the next 6 bytes are your return address back to the buffer with the NOP sled + shellcode. Using gdb's feature to dereference and print the i pointer ("print *i") was incredibly useful in making sure I was overwriting the function pointer.
+
+Design choices ~ heap_overflow exploit:
+
+I followed a similar design to the stack_overflow exploit. I used exactly the same shell code, but a different final return address based on my investigation above.
+
+How to run heap_overflow exploit:
+
+1. cd heap; gcc -o exploit exploit.c; ./exploit > hackfile; gdb ./heap_overflow
+2. run < hackfile

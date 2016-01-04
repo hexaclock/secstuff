@@ -1,0 +1,51 @@
+Daniel Vinakovsky
+Professor Georgios Portokalidis
+CS577
+September 15, 2015
+
+I pledge my honor that I have abided by the Stevens Honor System.
+
+Design choices:
+
+I chose to use the C programming language and the system's OpenSSL library for this assignment.
+I experimented somewhat with compiling/linking agains the OpenSSL library from their Github repo,
+but found that there was no significant advantage gained from doing so in this case. In fact,
+my code took longer to compile and was (in theory) less portable when doing so.
+
+The high-level design of the proxy server is simple. I open two sockets - one with the proxy client,
+and one with the target server specified by the proxy client. Once the proxy server receives a "CONNECT host:port"
+message, it responds with an "HTTP/1.0 200 Connection Established" message and then proceeds to negotiate an SSL session
+with the client and target server. Using select(2), my proxyserver relatively quickly unblocks, and starts to 
+read from whatever socket has data waiting to be read. This data is then immediately written to the other open socket 
+using SSL_write on the other socket. This data is then subsequently logged to a file. 
+The filename of this file follows the format: "YYYY-MM-DD-HH.MM.SSEST_srchost-dsthost.log"
+
+Lastly, I took inspiration for my output to the screen from several pentesting/recon tools I've used in the past.
+It looks neat, and greatly helped with the debugging process (lines prefixed with [+] indicate expected/correct
+behavior, [-] indicate some sort of error or unexpected failure, [*] is informational, and [/] is simply some detail about the internal
+flow of the program).
+
+Build instructions:
+
+* Run "make" in this directory.
+
+Run instructions:
+
+* cd ./src, then execute "./proxyserver <port> <certfile> <keyfile>" (if no files are provided, proxy server will try to use default files)
+* Start openssl s_server (binary available in this directory):
+  * ./openssl s_server -cert cacert.pem -key private.pem -accept 8900
+* Start openssl s_client (binary available in this directory):
+  * ./openssl s_client -proxy <proxyhost>:<port> -connect <server>:<serverport> -state -verify 1 -CAfile cacert.pem
+* Send messages. A log of each connection is available in the "src" folder.
+
+How an attacker would launch an MiTM attack if the client DID correctly verify the cert presented by the server
+and CAs were used for the client to verify certificates:
+
+This would make the attack somewhat more difficult. The attacker would need to either compromise a CA, or
+find a way to add his own/the proxy server's certificate to his victim's local trusted certificate store.
+Alternatively, the attacker could download the target server's certificate and attempt to steal its private key
+(by exploiting the Heartbleed vulnerability, or compromising the server in some other way). Assuming the attacker
+was successful in his/her attempt, he/she would simply launch the proxy server with the target server's 
+certificate and stolen private key, and wait for the victim client to connect to the proxy server.
+
+If the attacker were more advanced, perhaps they could redirect the client's traffic using DNS or ARP spoofing...

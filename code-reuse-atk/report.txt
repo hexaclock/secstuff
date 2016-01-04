@@ -1,0 +1,26 @@
+Daniel Vinakovsky
+Professor Georgios Portokalidis
+CS577
+October 4, 2015
+
+I pledge my honor that I have abided by the Stevens Honor System.
+
+Tools created for overflow attacks:
+I created 3 exploitation tools: exploit1.c, exploit2.c, and exploit3.c. Each outputs the exploit input for their respective attack. I automated the testing of these tools via a Makefile and "runme.sh".
+
+Manual investigation ~ stack_overflow:
+
+I needed to use the GNU Debugger (gdb) to inspect the stack_overflow binary when loaded in memory. I also needed to read the source code to find how the vulnerability could be reliably exploited. By using the gdb "info frame", "info reg", "disas", and "print" commands, I found what address I needed to have the program return to for the "unbelievable()" function. After that, I found where the puts(3) function was located in memory and called it with the address of the "Hello world" string I had stored in the static "mybuf" (the address was in the .text section). Lastly, for the third exploit, I found what the memory address of exit(3) was, and chained a second ret2libc for a clean exit.
+
+Design choices ~ stack_overflow exploits:
+
+Instead of specifying a location on the stack as an argument to puts(3), I specified a location in the more "stable" .text section of the program. This made implementing the exploit easier as I did not have to perform hexadecimal math.
+
+How to run stack_overflow exploit:
+
+1. cd exploits; ./runme.sh
+
+Location of exploit inputs:
+
+cd ./exploits
+hack1, hack2, hack3 are the exploit inputs for attack1, attack2, attack3.

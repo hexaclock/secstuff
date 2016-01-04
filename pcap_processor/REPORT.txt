@@ -1,0 +1,33 @@
+Daniel Vinakovsky
+Professor Portokalidis
+CS577 ~ Lab 8
+
+I pledge my honor that I have abided by the Stevens Honor System.
+
+Usage: ./pcapstat <pcapfile> [optional_module]
+Implemented modules: search, ssl
+
+search usage: ./pcapstat <pcapfile> search "match"
+       	  or: ./pcapstat <pcapfile> search -hex "DE AD BE EF"
+
+The base sniffer simply iterates through each packet in the file, and reports
+statistics on the number of IP packets, of which the counts for TCP, UDP, ICMP,
+and "Other" add up to. As per the assignment, we do not count the raw layer two
+Ethernet frames sent over the wire.
+
+The search module has a somewhat similar structure (only operates on IP packets,
+but it searches the entire packet for a possible match using memmem(3) - a
+function similar to strstr(3), but does not stop at '\0'. This module reports
+any matches that it finds in any packet, and prints out metadata about the
+packet, as well as the packet number. This module, as per the assignment, also
+supports hex representations by simply converting them to raw bytes.
+
+The encrypted flows module makes an effort to locate encrypted traffic that
+fits one of the usual SSL/TLS sequence. It looks for "Client Hello" packets,
+and places them into a vector. All other SSL/TLS data is placed into another
+vector. After this basic filtering opereation completes, another function
+reconstructs "flows" ("Client Hello" to end of SSL/TLS application data) by
+parsing and calculating sequence numbers. Lastly, we simply print out each
+"Client Hello" packet and the number of packets associated with each -
+essentially giving us a representation of how many packets per connection were
+sent or received.

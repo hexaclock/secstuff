@@ -1,0 +1,29 @@
+
+http://www.xsslabcollabtive.com/admin.php?action=addpro
+POST /admin.php?action=addpro HTTP/1.1
+Host: www.xsslabcollabtive.com
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:23.0) Gecko/20100101 Firefox/23.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://www.xsslabcollabtive.com/admin.php?action=projects
+Cookie: PHPSESSID=v9m7js32d7ss2dvjbmrpmruhr5
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 190
+name=newproj&desc=some+description+for+the+project.&neverdue=neverdue&budget=&assignto%5B%5D=6&assignto%5B%5D=5&assignto%5B%5D=4&assignto%5B%5D=3&assignto%5B%5D=2&assignto%5B%5D=1&assignme=1
+
+HTTP/1.1 302 Found
+Date: Sun, 25 Oct 2015 04:15:55 GMT
+Server: Apache/2.2.22 (Ubuntu)
+X-Powered-By: PHP/5.3.10-1ubuntu3.14
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Location: admin.php?action=projects&mode=added
+Content-Encoding: gzip
+Vary: Accept-Encoding
+Content-Length: 26
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html; charset=utf-8
